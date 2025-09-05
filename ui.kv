@@ -1,0 +1,125 @@
+#:kivy 2.3.0
+
+<ScreenNumeroGiocatori>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 20
+        canvas.before:
+            Color:
+                rgba: 0.9, 0.9, 0.9, 1  # sfondo chiaro
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Label:
+            text: "Numero giocatori"
+            font_size: 32
+            size_hint_y: 0.3
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+
+        Button:
+            text: "Avanti"
+            font_size: 28
+            size_hint_y: 0.2
+            on_press: app.root.current = "nomi_giocatori"
+
+
+
+<ScreenNomiGiocatori>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 30
+
+        Label:
+            text: "Schermata 2 - Inserisci nomi giocatori"
+            font_size: 36
+            size_hint_y: 0.4
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+
+        Button:
+            text: "Avvia partita"
+            font_size: 28
+            size_hint_y: 0.2
+            on_press: app.root.current = "inserimento_mano"
+
+
+<ScreenInserimentoMano>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 30
+
+        Label:
+            text: "Schermata 3 - Inserisci dati della mano"
+            font_size: 36
+            size_hint_y: 0.4
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+
+        Button:
+            text: "Calcola punteggi"
+            font_size: 28
+            size_hint_y: 0.2
+            on_press: app.root.current = "classifica_parziale"
+
+
+<ScreenClassificaParziale>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 20
+
+        Label:
+            text: "Schermata 4 - Classifica parziale"
+            font_size: 36
+            size_hint_y: 0.3
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+
+        Button:
+            text: "Prossima mano"
+            font_size: 28
+            size_hint_y: 0.2
+            on_press: app.root.current = "inserimento_mano"
+
+        Button:
+            text: "Fine partita"
+            font_size: 28
+            size_hint_y: 0.2
+            on_press: app.root.current = "classifica_finale"
+
+
+<ScreenClassificaFinale>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 40
+        spacing: 20
+
+        Label:
+            text: "Schermata 5 - Classifica finale"
+            font_size: 36
+            size_hint_y: 0.3
+            halign: "center"
+            valign: "middle"
+            text_size: self.size
+
+        Button:
+            text: "Nuova partita"
+            font_size: 28
+            size_hint_y: 0.2
+            on_press: app.root.current = "numero_giocatori"
+
+        Button:
+            text: "Esci"
+            font_size: 28
+            size_hint_y: 0.2
+            on_press: app.stop()
+

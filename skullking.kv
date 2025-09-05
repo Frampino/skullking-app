@@ -1,0 +1,178 @@
+#:kivy 2.3.0
+
+<ScreenNumeroGiocatori>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 20
+        spacing: 20
+
+        Label:
+            text: "Numero di giocatori (2-8)"
+            font_size: 32
+
+        TextInput:
+            id: num_giocatori_input
+            multiline: False
+            font_size: 28
+            input_filter: "int"
+
+        Label:
+            id: error_label
+            text: ""
+            color: (1,0,0,1)
+            font_size: 20
+
+        Button:
+            text: "Avanti"
+            font_size: 28
+            size_hint_y: 0.3
+            on_press: root.validate_and_continue()
+
+
+<ScreenNomiGiocatori>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 20
+        spacing: 10
+
+        Label:
+            text: "Inserisci i nomi dei giocatori"
+            font_size: 32
+
+        BoxLayout:
+            id: nomi_box
+            orientation: "vertical"
+            size_hint_y: 0.7
+            spacing: 10
+
+        Label:
+            id: error_label
+            text: ""
+            color: (1,0,0,1)
+            font_size: 20
+
+        Button:
+            text: "Avvia partita"
+            font_size: 28
+            size_hint_y: 0.2
+            on_press: root.validate_and_continue()
+
+
+<ScreenInserimentoMano>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        ScrollView:
+            do_scroll_x: False
+            do_scroll_y: True
+
+            BoxLayout:
+                id: giocatori_box
+                orientation: "vertical"
+                size_hint_y: None
+                height: self.minimum_height
+
+        # Barra inferiore con pulsanti
+        BoxLayout:
+            size_hint_y: None
+            height: 60
+            spacing: 10
+
+            Label:
+                text: "Carte:"
+                font_size: 20
+                color: (1,1,1,1)
+                size_hint_x: 0.3
+
+            TextInput:
+                id: carte_input
+                input_filter: "int"
+                multiline: False
+                font_size: 20
+                size_hint_x: 0.3
+
+            Button:
+                text: "Conferma"
+                font_size: 20
+                on_release: root.validate_and_continue()
+
+        Label:
+            id: error_label
+            text: ""
+            font_size: 18
+            color: (1,0,0,1)
+            size_hint_y: None
+            height: 30
+
+<ScreenClassificaParziale>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        Label:
+            text: "Classifica parziale"
+            font_size: 32
+            size_hint_y: 0.1
+
+        ScrollView:
+            size_hint_y: 0.8
+            do_scroll_x: False
+            GridLayout:
+                id: classifica_box
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: 60
+                row_force_default: True
+                spacing: 5
+
+        BoxLayout:
+            size_hint_y: 0.1
+            spacing: 10
+            Button:
+                text: "Prossima mano"
+                font_size: 24
+                on_press: root.prossima_mano()
+            Button:
+                text: "Fine partita"
+                font_size: 24
+                on_press: root.fine_partita()
+
+
+<ScreenClassificaFinale>:
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+
+        Label:
+            text: "Classifica finale"
+            font_size: 36
+            size_hint_y: 0.1
+
+        ScrollView:
+            size_hint_y: 0.8
+            do_scroll_x: False
+            GridLayout:
+                id: final_box
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: 50
+                row_force_default: True
+                spacing: 5
+
+        BoxLayout:
+            size_hint_y: 0.1
+            spacing: 10
+            Button:
+                text: "Nuova partita"
+                font_size: 24
+                on_press: root.nuova_partita()
+            Button:
+                text: "Esci"
+                font_size: 24
+                on_press: root.esci()
