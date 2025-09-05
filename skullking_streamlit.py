@@ -36,16 +36,6 @@ if "fine_partita" not in st.session_state:
     st.session_state.fine_partita = False
 
 # -------------------------------
-# Schermata 0: Risultati ultimo round
-# -------------------------------
-if st.session_state.round_last_results:
-    last_round_number = st.session_state.round_num - 1
-    st.subheader(f"📣 Risultati round {last_round_number}")
-    for line in st.session_state.round_last_results:
-        st.write(line)
-    st.markdown("---")
-
-# -------------------------------
 # Schermata 1: Numero giocatori
 # -------------------------------
 st.session_state.num_giocatori = st.number_input(
@@ -138,6 +128,15 @@ if st.session_state.show_round and not st.session_state.fine_partita:
     # Pulsante fine partita
     if st.button("🏁 Fine Partita"):
         st.session_state.fine_partita = True
+    # -------------------------------
+# Risultati ultimo round (in basso, sopra la classifica cumulativa)
+# -------------------------------
+    if st.session_state.round_last_results:
+        st.markdown("---")
+        last_round_number = st.session_state.round_num - 1
+        st.subheader(f"📣 Risultati round {last_round_number}")
+        for line in st.session_state.round_last_results:
+            st.write(line)
 
 # -------------------------------
 # Classifica finale se partita chiusa
@@ -157,6 +156,7 @@ if st.session_state.punteggi:
     sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
     for i, (nome, punti) in enumerate(sorted_total, start=1):
         st.write(f"{i}. {nome}: {punti} punti")
+
 
 
 
