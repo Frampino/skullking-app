@@ -170,7 +170,7 @@ if st.session_state.show_round:
 
         # Forziamo un rerun IMMEDIATO: la run successiva leggerà reset_round_inputs=True
         # e quindi i widget verranno inizializzati ai valori puliti.
-        st.experimental_rerun()
+        st.rerun()
 
 # -------------------------------
 # In basso: mostra sempre la classifica cumulativa (opzionale)
@@ -181,6 +181,7 @@ if st.session_state.punteggi:
     sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
     for i, (nome, punti) in enumerate(sorted_total, start=1):
         st.write(f"{i}. {nome}: {punti} punti")
+
 
 
 
