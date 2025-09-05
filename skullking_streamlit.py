@@ -78,24 +78,31 @@ if st.session_state.show_round:
     # -------------------------------
     # Bottone "Prossimo Round"
     # -------------------------------
-    if st.button("➡️ Prossimo Round"):
-        for nome, (puntata, prese, tipo, specials) in round_data.items():
-            punteggio = calcola_punteggio_totale(
-                puntata, prese, tipo, st.session_state.round_cards, specials
-            )
-            if nome not in st.session_state.punteggi:
-                st.session_state.punteggi[nome] = 0
-            st.session_state.punteggi[nome] += punteggio
-            st.write(f"{nome}: +{punteggio} punti (Totale: {st.session_state.punteggi[nome]})")
+if st.button("➡️ Prossimo Round"):
+    for nome, (puntata, prese, tipo, specials) in round_data.items():
+        punteggio = calcola_punteggio_totale(
+            puntata, prese, tipo, st.session_state.round_cards, specials
+        )
+        if nome not in st.session_state.punteggi:
+            st.session_state.punteggi[nome] = 0
+        st.session_state.punteggi[nome] += punteggio
 
-        # Classifica cumulativa
-        st.subheader("📊 Classifica Cumulativa")
-        sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
-        for i, (nome, punti) in enumerate(sorted_total, start=1):
-            st.write(f"{i}. {nome}: {punti} punti")
+        # Reset dei valori dei widget per il prossimo round
+        st.session_state[f"{nome}_puntata"] = 0
+        st.session_state[f"{nome}_prese"] = 0
+        st.session_state[f"{nome}_tipo"] = "aperta"
+        st.session_state[f"{nome}_specials"] = []
 
-        # Passa al round successivo
-        st.session_state.round_num += 1
+    # Classifica cumulativa
+    st.subheader("📊 Classifica Cumulativa")
+    sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
+    for i, (nome, punti) in enumerate(sorted_total, start=1):
+        st.write(f"{i}. {nome}: {punti} punti")
+
+    # Passa al round successivo
+    st.session_state.round_num += 1
+
+
 
 
 
