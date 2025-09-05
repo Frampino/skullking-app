@@ -139,23 +139,39 @@ if st.session_state.show_round and not st.session_state.fine_partita:
             st.write(line)
 
 # -------------------------------
-# Classifica finale se partita chiusa
+# Schermata finale
 # -------------------------------
 if st.session_state.fine_partita:
-    st.subheader("🎉 Classifica Finale")
-    classifica = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
-    for i, (nome, punti) in enumerate(classifica, start=1):
-        st.write(f"{i}. {nome}: {punti} punti")
+    st.title("🏴‍☠️ Skull King")
+    st.markdown("## 🏆 Classifica Finale")
+
+    # Ordina i punteggi decrescenti
+    classifica_finale = sorted(
+        st.session_state.punteggi.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+    for i, (nome, punti) in enumerate(classifica_finale, 1):
+        corona = " 👑" if i == 1 else ""
+        st.write(f"{i}. **{nome}** — {punti} punti{corona}")
+
+    st.markdown("---")
+    if st.button("🔄 Nuova Partita"):
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        st.rerun()
 
 # -------------------------------
-# Sempre visibile: classifica cumulativa
+# Classifica cumulativa (solo se partita NON finita)
 # -------------------------------
-if st.session_state.punteggi:
+elif st.session_state.punteggi:
     st.markdown("---")
     st.subheader("📊 Classifica Cumulativa (aggiornata)")
     sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
     for i, (nome, punti) in enumerate(sorted_total, start=1):
         st.write(f"{i}. {nome}: {punti} punti")
+
+
 
 
 
