@@ -1,36 +1,29 @@
-# skullking_streamlit.py
 import streamlit as st
 from logic import calcola_punteggio_totale
 
 st.set_page_config(page_title="Skull King - Rascall", layout="wide")
 st.title("🎴 Skull King - Variante Rascall")
 
-# --- Inizializza session state ---
+# Inizializza session_state
 if "num_giocatori" not in st.session_state:
-    st.session_state.num_giocatori = 0
+    st.session_state.num_giocatori = 2  # valore minimo di default
 if "nomi" not in st.session_state:
     st.session_state.nomi = []
 if "punteggi" not in st.session_state:
-    st.session_state.punteggi = {}  # punteggi cumulativi
-if "round_num" not in st.session_state:
-    st.session_state.round_num = 1
+    st.session_state.punteggi = {}
 
-# --- Schermata 1: Numero giocatori ---
-st.subheader("1️⃣ Seleziona numero giocatori")
+# Numero giocatori
 st.session_state.num_giocatori = st.number_input(
-    "Quanti giocatori?", 
-    min_value=2, max_value=8, step=1, 
+    "Quanti giocatori?",
+    min_value=2, max_value=8, step=1,
     value=st.session_state.num_giocatori
 )
 
-# --- Schermata 2: Nomi giocatori ---
-st.subheader("2️⃣ Inserisci nomi giocatori")
-nomi = []
+# Nomi giocatori
+st.session_state.nomi = []
 for i in range(st.session_state.num_giocatori):
-    nome = st.text_input(f"Nome giocatore {i+1}", 
-                         value=st.session_state.nomi[i] if i < len(st.session_state.nomi) else "")
-    nomi.append(nome.strip())
-st.session_state.nomi = nomi
+    nome = st.text_input(f"Nome giocatore {i+1}", key=f"nome_{i}")
+    st.session_state.nomi.append(nome.strip())
 
 # Controllo che tutti i nomi siano inseriti
 if all(st.session_state.nomi):
@@ -81,6 +74,7 @@ if "show_round" in st.session_state and st.session_state.show_round:
             st.write(f"{nome}: +{punteggio} punti (Totale: {st.session_state.punteggi[nome]})")
 
         st.session_state.round_num += 1  # passa al round successivo
+
 
 
 
