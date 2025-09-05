@@ -80,10 +80,10 @@ if st.session_state.show_round:
     # -------------------------------
 if st.button("➡️ Prossimo Round"):
     for nome in st.session_state.nomi:
-        puntata = st.session_state[f"{nome}_puntata"]
-        prese = st.session_state[f"{nome}_prese"]
-        tipo = st.session_state[f"{nome}_tipo"]
-        specials = st.session_state[f"{nome}_specials"]
+        puntata = st.session_state.get(f"{nome}_puntata", 0)
+        prese = st.session_state.get(f"{nome}_prese", 0)
+        tipo = st.session_state.get(f"{nome}_tipo", "aperta")
+        specials = st.session_state.get(f"{nome}_specials", [])
 
         punteggio = calcola_punteggio_totale(
             puntata, prese, tipo, st.session_state.round_cards, specials
@@ -93,7 +93,7 @@ if st.button("➡️ Prossimo Round"):
             st.session_state.punteggi[nome] = 0
         st.session_state.punteggi[nome] += punteggio
 
-        # Resetta valori per il prossimo round
+        # Reset dei valori per il prossimo round
         st.session_state[f"{nome}_puntata"] = 0
         st.session_state[f"{nome}_prese"] = 0
         st.session_state[f"{nome}_tipo"] = "aperta"
@@ -106,6 +106,8 @@ if st.button("➡️ Prossimo Round"):
         st.write(f"{i}. {nome}: {punti} punti")
 
     st.session_state.round_num += 1
+
+
 
 
 
