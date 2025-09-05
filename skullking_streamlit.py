@@ -153,8 +153,15 @@ if st.session_state.show_round and not st.session_state.fine_partita:
     # Pulsante fine partita
     if st.button("🏁 Fine Partita"):
         st.session_state.fine_partita = True
-    # -------------------------------
-# Risultati ultimo round (in basso, sopra la classifica cumulativa)
+
+# -------------------------------
+# Se la partita NON è finita, mostra ultimi risultati e classifica
+# -------------------------------
+
+if not st.session_state.fine_partita:
+    
+# -------------------------------
+# Risultati ultimo round
 # -------------------------------
     if st.session_state.round_last_results:
         st.markdown("---")
@@ -166,12 +173,13 @@ if st.session_state.show_round and not st.session_state.fine_partita:
 # -------------------------------
 # Classifica cumulativa (solo se partita NON finita)
 # -------------------------------
-elif st.session_state.punteggi:
-    st.markdown("---")
-    st.subheader("📊 Classifica Cumulativa (aggiornata)")
-    sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
-    for i, (nome, punti) in enumerate(sorted_total, start=1):
-        st.write(f"{i}. {nome}: {punti} punti")
+    if st.session_state.punteggi:
+        st.markdown("---")
+        st.subheader("📊 Classifica Cumulativa (aggiornata)")
+        sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
+        for i, (nome, punti) in enumerate(sorted_total, start=1):
+            st.write(f"{i}. {nome}: {punti} punti")
+
 
 
 
