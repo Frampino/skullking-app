@@ -2,6 +2,32 @@
 import streamlit as st
 from logic import calcola_punteggio_totale
 
+# -------------------------------
+# Schermata finale (mostra solo classifica e nuova partita)
+# -------------------------------
+if st.session_state.fine_partita:
+    st.title("🏴‍☠️ Skull King")
+    st.markdown("## 🏆 Classifica Finale")
+
+    classifica_finale = sorted(
+        st.session_state.punteggi.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+    for i, (nome, punti) in enumerate(classifica_finale, 1):
+        corona = " 👑" if i == 1 else ""
+        st.write(f"{i}. **{nome}** — {punti} punti{corona}")
+
+    st.markdown("---")
+    if st.button("🔄 Nuova Partita"):
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        st.rerun()
+
+    # 🔴 Importantissimo: blocca qui il codice,
+    # così non mostra più schermate sotto
+    st.stop()
+
 st.set_page_config(page_title="Skull King", layout="wide")
 st.title("🏴‍☠️ Skull King")
 
@@ -34,32 +60,6 @@ if "round_last_results" not in st.session_state:
 
 if "fine_partita" not in st.session_state:
     st.session_state.fine_partita = False
-
-# -------------------------------
-# Schermata finale (mostra solo classifica e nuova partita)
-# -------------------------------
-if st.session_state.fine_partita:
-    st.title("🏴‍☠️ Skull King")
-    st.markdown("## 🏆 Classifica Finale")
-
-    classifica_finale = sorted(
-        st.session_state.punteggi.items(),
-        key=lambda x: x[1],
-        reverse=True
-    )
-    for i, (nome, punti) in enumerate(classifica_finale, 1):
-        corona = " 👑" if i == 1 else ""
-        st.write(f"{i}. **{nome}** — {punti} punti{corona}")
-
-    st.markdown("---")
-    if st.button("🔄 Nuova Partita"):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-        st.rerun()
-
-    # 🔴 Importantissimo: blocca qui il codice,
-    # così non mostra più schermate sotto
-    st.stop()
 
 # -------------------------------
 # Schermata 1: Numero giocatori
@@ -173,6 +173,7 @@ elif st.session_state.punteggi:
     sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
     for i, (nome, punti) in enumerate(sorted_total, start=1):
         st.write(f"{i}. {nome}: {punti} punti")
+
 
 
 
