@@ -36,6 +36,32 @@ if "fine_partita" not in st.session_state:
     st.session_state.fine_partita = False
 
 # -------------------------------
+# Schermata finale (mostra solo classifica e nuova partita)
+# -------------------------------
+if st.session_state.fine_partita:
+    st.title("🏴‍☠️ Skull King")
+    st.markdown("## 🏆 Classifica Finale")
+
+    classifica_finale = sorted(
+        st.session_state.punteggi.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+    for i, (nome, punti) in enumerate(classifica_finale, 1):
+        corona = " 👑" if i == 1 else ""
+        st.write(f"{i}. **{nome}** — {punti} punti{corona}")
+
+    st.markdown("---")
+    if st.button("🔄 Nuova Partita"):
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        st.rerun()
+
+    # 🔴 Importantissimo: blocca qui il codice,
+    # così non mostra più schermate sotto
+    st.stop()
+
+# -------------------------------
 # Schermata 1: Numero giocatori
 # -------------------------------
 st.session_state.num_giocatori = st.number_input(
@@ -139,29 +165,6 @@ if st.session_state.show_round and not st.session_state.fine_partita:
             st.write(line)
 
 # -------------------------------
-# Schermata finale
-# -------------------------------
-if st.session_state.fine_partita:
-    st.title("🏴‍☠️ Skull King")
-    st.markdown("## 🏆 Classifica Finale")
-
-    # Ordina i punteggi decrescenti
-    classifica_finale = sorted(
-        st.session_state.punteggi.items(),
-        key=lambda x: x[1],
-        reverse=True
-    )
-    for i, (nome, punti) in enumerate(classifica_finale, 1):
-        corona = " 👑" if i == 1 else ""
-        st.write(f"{i}. **{nome}** — {punti} punti{corona}")
-
-    st.markdown("---")
-    if st.button("🔄 Nuova Partita"):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-        st.rerun()
-
-# -------------------------------
 # Classifica cumulativa (solo se partita NON finita)
 # -------------------------------
 elif st.session_state.punteggi:
@@ -170,6 +173,7 @@ elif st.session_state.punteggi:
     sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
     for i, (nome, punti) in enumerate(sorted_total, start=1):
         st.write(f"{i}. {nome}: {punti} punti")
+
 
 
 
