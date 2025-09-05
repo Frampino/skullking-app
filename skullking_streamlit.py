@@ -1,127 +1,165 @@
+# skullking_streamlit.py
 import streamlit as st
-import pandas as pd
+from logic import calcola_punteggio_totale
+
+st.set_page_config(page_title="Skull King", layout="wide")
+st.title("🏴‍☠️ Skull King")
 
 # -------------------------------
-# INIZIALIZZAZIONE VARIABILI
+# Inizializzazioni di session_state
 # -------------------------------
-if "players" not in st.session_state:
-    st.session_state.players = ["Giocatore 1", "Giocatore 2"]
-if "scores" not in st.session_state:
-    st.session_state.scores = {nome: [] for nome in st.session_state.players}
 if "round_num" not in st.session_state:
     st.session_state.round_num = 1
+
+if "num_giocatori" not in st.session_state:
+    st.session_state.num_giocatori = 2
+
+if "nomi" not in st.session_state:
+    st.session_state.nomi = []
+
+if "punteggi" not in st.session_state:
+    st.session_state.punteggi = {}   # punteggi cumulativi
+
+if "round_cards" not in st.session_state:
+    st.session_state.round_cards = 1
+
+if "show_round" not in st.session_state:
+    st.session_state.show_round = False
+
+if "reset_round_inputs" not in st.session_state:
+    st.session_state.reset_round_inputs = False
+
+if "round_last_results" not in st.session_state:
+    st.session_state.round_last_results = []
+
 if "fine_partita" not in st.session_state:
     st.session_state.fine_partita = False
-if "last_results" not in st.session_state:
-    st.session_state.last_results = None
 
 # -------------------------------
-# HEADER
+# Schermata 0: Risultati ultimo round
 # -------------------------------
-st.title("🏴‍☠️ Segnapunti Skull King")
-
-# -------------------------------
-# GESTIONE FINE PARTITA
-# -------------------------------
-if st.session_state.fine_partita:
-    st.subheader("🏆 Fine partita!")
-    punteggi_finali = {g: sum(st.session_state.scores[g]) for g in st.session_state.players}
-    classifica_finale = pd.DataFrame.from_dict(
-        punteggi_finali, orient="index", columns=["Punteggio Finale"]
-    ).sort_values(by="Punteggio Finale", ascending=False)
-    st.table(classifica_finale)
-
-    # Bottone nuova partita: resetta tutto
-    if st.button("🔄 Nuova partita"):
-        st.session_state.scores = {nome: [] for nome in st.session_state.players}
-        st.session_state.round_num = 1
-        st.session_state.fine_partita = False
-        st.session_state.last_results = None
-        st.rerun()
-
-    st.stop()  # blocca il resto della pagina se la partita è finita
+if st.session_state.round_last_results:
+    last_round_number = st.session_state.round_num - 1
+    st.subheader(f"📣 Risultati round {last_round_number}")
+    for line in st.session_state.round_last_results:
+        st.write(line)
+    st.markdown("---")
 
 # -------------------------------
-# SEZIONE ROUND
+# Schermata 1: Numero giocatori
 # -------------------------------
-st.subheader(f"3️⃣ Round {st.session_state.round_num} - Inserisci dettagli")
-
-round_data = {}
-for nome in st.session_state.players:
-    col1, col2 = st.columns(2)
-    with col1:
-        puntata = st.number_input(
-            f"Puntata {nome}", min_value=0, key=f"{nome}_puntata_{st.session_state.round_num}"
-        )
-        prese = st.number_input(
-            f"Prese {nome}", min_value=0, key=f"{nome}_prese_{st.session_state.round_num}"
-        )
-    with col2:
-        tipo = st.selectbox(
-            f"Tipo mano {nome}", ["Normale", "Speciale"], key=f"{nome}_tipo_{st.session_state.round_num}"
-        )
-        specials = st.text_input(
-            f"Bonus/Malus {nome}", key=f"{nome}_specials_{st.session_state.round_num}"
-        )
-    round_data[nome] = (puntata, prese, tipo, specials)
+st.session_state.num_giocatori = st.number_input(
+    "Quanti giocatori?",
+    min_value=2, max_value=8, step=1,
+    value=st.session_state.num_giocatori
+)
 
 # -------------------------------
-# BOTTONE PROSSIMO ROUND
+# Schermata 2: Nomi giocatori
 # -------------------------------
-if st.button("➡️ Prossimo round"):
-    # Calcolo punteggi round
-    risultati_round = {}
-    for nome, (puntata, prese, tipo, specials) in round_data.items():
-        punteggio = 0
-        if puntata == prese:
-            punteggio = 20 + puntata * 10
-        else:
-            punteggio = -10 * abs(puntata - prese)
-        st.session_state.scores[nome].append(punteggio)
-        risultati_round[nome] = punteggio
+st.session_state.nomi = []
+for i in range(st.session_state.num_giocatori):
+    nome = st.text_input(f"Nome giocatore {i+1}", key=f"nome_{i}")
+    st.session_state.nomi.append(nome.strip())
 
-    # Salvo gli ultimi risultati
-    st.session_state.last_results = risultati_round
-
-    # Avanza al prossimo round
-    st.session_state.round_num += 1
-
-    # Reset input del nuovo round
-    for nome in st.session_state.players:
-        for key in [
-            f"{nome}_puntata_{st.session_state.round_num}",
-            f"{nome}_prese_{st.session_state.round_num}",
-            f"{nome}_tipo_{st.session_state.round_num}",
-            f"{nome}_specials_{st.session_state.round_num}",
-        ]:
-            if key in st.session_state:
-                del st.session_state[key]
-
-    st.rerun()
+if all(st.session_state.nomi):
+    if st.button("Inizia Round"):
+        st.session_state.show_round = True
+        st.session_state.round_last_results = []  # pulizia
 
 # -------------------------------
-# RISULTATI ULTIMO ROUND (in fondo)
+# Schermata 3: Inserimento dettagli round
 # -------------------------------
-if st.session_state.last_results:
-    st.subheader(f"📊 Risultati round {st.session_state.round_num - 1}")
-    st.table(
-        pd.DataFrame.from_dict(st.session_state.last_results, orient="index", columns=["Punteggio"])
+if st.session_state.show_round and not st.session_state.fine_partita:
+    st.subheader(f"3️⃣ Round {st.session_state.round_num} - Inserisci dettagli")
+
+    st.session_state.round_cards = st.number_input(
+        "Quante carte in questo round?",
+        min_value=1, step=1,
+        value=st.session_state.round_cards
     )
 
-# -------------------------------
-# CLASSIFICA CUMULATIVA
-# -------------------------------
-st.subheader("📈 Classifica cumulativa")
-punteggi_totali = {g: sum(st.session_state.scores[g]) for g in st.session_state.players}
-classifica = pd.DataFrame.from_dict(punteggi_totali, orient="index", columns=["Totale"]).sort_values(by="Totale", ascending=False)
-st.table(classifica)
+    round_data = {}
+    for nome in st.session_state.nomi:
+        st.markdown(f"### {nome}")
+        col1, col2, col3 = st.columns([1,1,1])
+
+        puntata = st.number_input(
+            f"{nome} - Puntata",
+            min_value=0, step=1,
+            key=f"{nome}_puntata",
+            value=0 if st.session_state.reset_round_inputs else st.session_state.get(f"{nome}_puntata", 0)
+        )
+        prese = st.number_input(
+            f"{nome} - Prese",
+            min_value=0, step=1,
+            key=f"{nome}_prese",
+            value=0 if st.session_state.reset_round_inputs else st.session_state.get(f"{nome}_prese", 0)
+        )
+        tipo_index = 0 if st.session_state.reset_round_inputs else ["aperta", "chiusa"].index(
+            st.session_state.get(f"{nome}_tipo", "aperta")
+        )
+        tipo = st.selectbox(
+            f"{nome} - Tipo",
+            ["aperta", "chiusa"],
+            key=f"{nome}_tipo",
+            index=tipo_index
+        )
+        specials = st.multiselect(
+            f"{nome} - Bonus / Malus",
+            ["PiratavsSirena", "SkullKingvsPirata", "SirenavsSkullKing",
+             "Boutil", "14", "14Nero", "AkabvsAbissale", "BoutilMaledetto"],
+            key=f"{nome}_specials",
+            default=[] if st.session_state.reset_round_inputs else st.session_state.get(f"{nome}_specials", [])
+        )
+
+        round_data[nome] = (puntata, prese, tipo, specials)
+
+    st.session_state.reset_round_inputs = False
+
+    # -------------------------------
+    # Bottone "Calcola Punteggi Round"
+    # -------------------------------
+    if st.button("Calcola Punteggi Round"):
+        risultati = []
+        for nome, (puntata, prese, tipo, specials) in round_data.items():
+            punteggio = calcola_punteggio_totale(
+                puntata, prese, tipo, st.session_state.round_cards, specials
+            )
+            st.session_state.punteggi[nome] = st.session_state.punteggi.get(nome, 0) + punteggio
+            risultati.append(f"{nome}: +{punteggio} punti (Totale: {st.session_state.punteggi[nome]})")
+
+        # salvo i risultati in session_state per mostrarli sopra
+        st.session_state.round_last_results = risultati
+        st.session_state.round_num += 1
+        st.session_state.reset_round_inputs = True
+        st.rerun()
+
+    # Pulsante fine partita
+    if st.button("🏁 Fine Partita"):
+        st.session_state.fine_partita = True
 
 # -------------------------------
-# BOTTONE FINE PARTITA
+# Classifica finale se partita chiusa
 # -------------------------------
-if st.button("🏁 Fine partita"):
-    st.session_state.fine_partita = True
-    st.rerun()
+if st.session_state.fine_partita:
+    st.subheader("🎉 Classifica Finale")
+    classifica = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
+    for i, (nome, punti) in enumerate(classifica, start=1):
+        st.write(f"{i}. {nome}: {punti} punti")
+
+# -------------------------------
+# Sempre visibile: classifica cumulativa
+# -------------------------------
+if st.session_state.punteggi:
+    st.markdown("---")
+    st.subheader("📊 Classifica Cumulativa (aggiornata)")
+    sorted_total = sorted(st.session_state.punteggi.items(), key=lambda x: x[1], reverse=True)
+    for i, (nome, punti) in enumerate(sorted_total, start=1):
+        st.write(f"{i}. {nome}: {punti} punti")
+
+
+
 
 
 
